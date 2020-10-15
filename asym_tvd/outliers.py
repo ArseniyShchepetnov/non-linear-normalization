@@ -1,5 +1,4 @@
 """Functions for outlier detection."""
-
 import numpy as np
 
 
