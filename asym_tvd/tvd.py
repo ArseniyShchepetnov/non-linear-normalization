@@ -2,7 +2,8 @@
 from typing import Optional
 
 import numpy as np
-import scipy.sparse as sp
+from scipy.sparse import csc_matrix
+from scipy.sparse.linalg import inv
 
 from asym_tvd.outliers import q_outliers
 
@@ -36,7 +37,7 @@ def tvd(y: np.ndarray,
 
     l = y.size
     I = np.eye(l)
-    D = sp.csc_matrix(np.diff(I, 1)).transpose()
+    D = csc_matrix(np.diff(I, 1)).transpose()
     DT = D.transpose()
     DDT = D.dot(DT)
     x = y.copy()
@@ -45,8 +46,8 @@ def tvd(y: np.ndarray,
 
     for k in range(n_iter):
 
-        F = sp.csc_matrix(np.diag(np.abs(Dx) / lam) + DDT)
-        Finv = sp.linalg.inv(F)
+        F = csc_matrix(np.diag(np.abs(Dx) / lam) + DDT)
+        Finv = inv(F)
         x = y - DT.dot(Finv.dot(Dy))
         Dx = D.dot(x)
 
@@ -153,9 +154,9 @@ def tvd_linear_w_weights(y: np.ndarray,
 
     for k in range(n_iter):
 
-        F = sp.csc_matrix(np.diag(np.abs(Dx) / lam) + DWDT)
+        F = csc_matrix(np.diag(np.abs(Dx) / lam) + DWDT)
 
-        Finv = sp.linalg.inv(F)
+        Finv = inv(F)
 
         x = y - WDT.dot(Finv.dot(Dy))
         Dx = D.dot(x)
@@ -200,13 +201,17 @@ def asym_tvd_linear(y: np.ndarray,
     w = np.ones(shape=(y.size, ))
     x = None
 
+    costs = []
+
     for _ in range(n_iter):
 
-        x, _ = tvd_linear_w_weights(y, w, x=x, n_iter=n_tvd_iter, lam=lam)
+        x, cost = tvd_linear_w_weights(y, w, x=x, n_iter=n_tvd_iter, lam=lam)
+
+        costs.append(cost)
 
         w = p_asym * (y > x) + (1 - p_asym) * (y < x)
 
         if outliers is not None:
             w = w * (1 - q_outliers(y - x, q_margin=outliers))
 
-    return x
+    return x, costs
