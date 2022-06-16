@@ -5,7 +5,7 @@ import numpy as np
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import inv
 
-from asym_tvd.outliers import q_outliers
+from nlnorm.outliers import q_outliers
 
 
 def tvd(y: np.ndarray,
