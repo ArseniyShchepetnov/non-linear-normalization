@@ -23,10 +23,10 @@ jobs:
           cache: "poetry"
       - run: poetry install
 
-      - name: Lint with pylint
-        run: |
-          poetry run pylint dataframe --fail-under=10
+      # - name: Lint with pylint
+      #   run: |
+      #     poetry run pylint dataframe --fail-under=10
 
-      - name: Test with pytest
-        run: |
-          poetry run pytest . --cov=dataframe --cov-fail-under=90  --cov-report=term-missing
+      # - name: Test with pytest
+      #   run: |
+      #     poetry run pytest . --cov=dataframe --cov-fail-under=90  --cov-report=term-missing
