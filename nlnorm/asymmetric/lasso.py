@@ -1,11 +1,11 @@
 """Asymmetric ridge regression."""
-from typing import Any, Dict, Optional, Literal
+from typing import Any, Dict, Literal, Optional
 
 import numpy as np
 from sklearn.linear_model import Lasso
 
+from nlnorm.asymmetric.weights import set_asymmetric_weights
 from nlnorm.diff_matrix import invertable_diff1_matrix, invertable_diff2_matrix
-from nlnorm.outliers import correct_weights_outliers
 
 
 class AsymmetricLasso:  # pylint: disable=too-few-public-methods
@@ -73,17 +73,10 @@ class AsymmetricLasso:  # pylint: disable=too-few-public-methods
         lasso = Lasso(alpha=self.alpha_lasso, **lasso_params)
 
         for _ in range(self.max_iter):
-
             lasso.fit(diff_inv, data, sample_weight=weights)
             est = lasso.predict(diff_inv)
-
-            weights = (
-                self.alpha * (data > est) + (1 - self.alpha) * (data < est)
-            )
-            if self.outliers is not None:
-                weights = correct_weights_outliers(data,
-                                                   est,
-                                                   weights,
-                                                   outliers=self.outliers)
-
+            weights = set_asymmetric_weights(data,
+                                             est,
+                                             alpha=self.alpha,
+                                             outliers=self.outliers)
         return est

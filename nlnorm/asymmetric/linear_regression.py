@@ -4,7 +4,7 @@ from typing import Optional
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-from nlnorm.outliers import q_outliers
+from nlnorm.asymmetric.weights import set_asymmetric_weights
 
 
 class AsymmetricLinearRegression:  # pylint: disable=too-few-public-methods
@@ -69,11 +69,9 @@ class AsymmetricLinearRegression:  # pylint: disable=too-few-public-methods
 
             coef_last = coef
 
-            diff = y_data - pred
-            weights = np.where(diff > 0, self.alpha, 1 - self.alpha)
-
-            if self.outliers is not None:
-                where_outliers = q_outliers(diff, q_margin=self.outliers)
-                weights = weights * (1 - where_outliers)
+            weights = set_asymmetric_weights(y_data,
+                                             pred,
+                                             alpha=self.alpha,
+                                             outliers=self.outliers)
 
         return pred

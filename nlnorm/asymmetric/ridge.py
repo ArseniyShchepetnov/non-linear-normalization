@@ -4,8 +4,8 @@ from typing import Any, Dict, Optional
 import numpy as np
 from sklearn.linear_model import Ridge
 
+from nlnorm.asymmetric.weights import set_asymmetric_weights
 from nlnorm.diff_matrix import invertable_diff2_matrix
-from nlnorm.outliers import correct_weights_outliers
 
 
 class AsymmetricRidge:  # pylint: disable=too-few-public-methods
@@ -66,17 +66,10 @@ class AsymmetricRidge:  # pylint: disable=too-few-public-methods
         ridge = Ridge(alpha=self.alpha_ridge, **ridge_params)
 
         for _ in range(self.max_iter):
-
             ridge.fit(diff_inv, data, sample_weight=weights)
             est = ridge.predict(diff_inv)
-
-            weights = (
-                self.alpha * (data > est) + (1 - self.alpha) * (data < est)
-            )
-            if self.outliers is not None:
-                weights = correct_weights_outliers(data,
-                                                   est,
-                                                   weights,
-                                                   outliers=self.outliers)
-
+            weights = set_asymmetric_weights(data,
+                                             est,
+                                             alpha=self.alpha,
+                                             outliers=self.outliers)
         return est
