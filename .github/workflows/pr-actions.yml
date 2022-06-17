@@ -23,9 +23,9 @@ jobs:
           cache: "poetry"
       - run: poetry install
 
-      # - name: Lint with pylint
-      #   run: |
-      #     poetry run pylint nlnorm --fail-under=10
+      - name: Lint with pylint
+        run: |
+          poetry run pylint nlnorm --fail-under=10
 
       # - name: Lint with pylint
       #   run: |
