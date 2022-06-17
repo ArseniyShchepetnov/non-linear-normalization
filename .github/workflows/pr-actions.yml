@@ -33,11 +33,11 @@ jobs:
 
       - name: Mypy checking
         run: |
-          poetry run mypy nlnorm
+          poetry run mypy nlnorm --ignore-missing-imports
 
       - name: Mypy checking tests
         run: |
-          poetry run mypy test
+          poetry run mypy test --ignore-missing-imports
 
       - name: Test with pytest
         run: |
