@@ -27,10 +27,18 @@ jobs:
         run: |
           poetry run pylint nlnorm --fail-under=10
 
-      # - name: Lint with pylint
-      #   run: |
-      #     poetry run mypy nlnorm
+      - name: Lint with pylint tests
+        run: |
+          poetry run pylint test --fail-under=10
 
-      # - name: Test with pytest
-      #   run: |
-      #     poetry run pytest . --cov=nlnorm --cov-fail-under=90  --cov-report=term-missing
+      - name: Mypy checking
+        run: |
+          poetry run mypy nlnorm
+
+      - name: Mypy checking tests
+        run: |
+          poetry run mypy test
+
+      - name: Test with pytest
+        run: |
+          poetry run pytest . --cov=nlnorm --cov-fail-under=70  --cov-report=term-missing
