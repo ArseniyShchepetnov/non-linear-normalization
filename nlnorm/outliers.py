@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def q_outliers(sig: np.ndarray, q_margin=0.15) -> np.ndarray:
+def q_outliers(sig: np.ndarray, q_margin: float = 0.15) -> np.ndarray:
     """
     Outliers by quantile.
 

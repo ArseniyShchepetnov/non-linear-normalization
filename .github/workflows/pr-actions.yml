@@ -19,18 +19,26 @@ jobs:
         run: pipx install poetry
       - uses: actions/setup-python@v3
         with:
-          python-version: "3.9"
+          python-version: "3.9.9"
           cache: "poetry"
       - run: poetry install
 
-      # - name: Lint with pylint
-      #   run: |
-      #     poetry run pylint nlnorm --fail-under=10
+      - name: Lint with pylint
+        run: |
+          poetry run pylint nlnorm --fail-under=10
 
-      # - name: Lint with pylint
-      #   run: |
-      #     poetry run mypy nlnorm
+      - name: Lint with pylint tests
+        run: |
+          poetry run pylint test --fail-under=10
 
-      # - name: Test with pytest
-      #   run: |
-      #     poetry run pytest . --cov=nlnorm --cov-fail-under=90  --cov-report=term-missing
+      - name: Mypy checking
+        run: |
+          poetry run mypy nlnorm --install-types
+
+      - name: Mypy checking tests
+        run: |
+          poetry run mypy test --install-types
+
+      - name: Test with pytest
+        run: |
+          poetry run pytest .
