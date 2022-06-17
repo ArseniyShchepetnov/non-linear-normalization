@@ -33,12 +33,11 @@ jobs:
 
       - name: Mypy checking
         run: |
-          poetry run mypy --install-types
-          poetry run mypy nlnorm --ignore-missing-imports
+          poetry run mypy nlnorm --install-types
 
       - name: Mypy checking tests
         run: |
-          poetry run mypy test --ignore-missing-imports
+          poetry run mypy test --install-types
 
       - name: Test with pytest
         run: |
