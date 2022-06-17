@@ -5,13 +5,13 @@ import numpy as np
 from sklearn.linear_model import Lasso
 
 from nlnorm.diff_matrix import invertable_diff1_matrix, invertable_diff2_matrix
-from nlnorm.outliers import q_outliers
+from nlnorm.outliers import correct_weights_outliers
 
 
-class AsymmetricLasso:
+class AsymmetricLasso:  # pylint: disable=too-few-public-methods
     """Asymmetric lasso regression."""
 
-    def __init__(self,
+    def __init__(self,  # pylint: disable=too-many-arguments
                  alpha: float = 0.9,
                  alpha_lasso: float = 0.9,
                  tol: float = 1e-6,
@@ -63,9 +63,9 @@ class AsymmetricLasso:
             lasso_params = self.lasso_params
 
         if self.diff_order == 1:
-            Dinv = np.linalg.inv(invertable_diff1_matrix(len(data)))
+            diff_inv = np.linalg.inv(invertable_diff1_matrix(len(data)))
         elif self.diff_order == 2:
-            Dinv = np.linalg.inv(invertable_diff2_matrix(len(data)))
+            diff_inv = np.linalg.inv(invertable_diff2_matrix(len(data)))
         else:
             raise ValueError(f"Unknown difference order: {self.diff_order}")
 
@@ -74,22 +74,16 @@ class AsymmetricLasso:
 
         for _ in range(self.max_iter):
 
-            lasso.fit(Dinv, data, sample_weight=weights)
-            est = lasso.predict(Dinv)
+            lasso.fit(diff_inv, data, sample_weight=weights)
+            est = lasso.predict(diff_inv)
 
             weights = (
                 self.alpha * (data > est) + (1 - self.alpha) * (data < est)
             )
-            weights = self.correct_weights_outliers(data, est, weights)
+            if self.outliers is not None:
+                weights = correct_weights_outliers(data,
+                                                   est,
+                                                   weights,
+                                                   outliers=self.outliers)
 
         return est
-
-    def correct_weights_outliers(self,
-                                 data: np.ndarray,
-                                 est: np.ndarray,
-                                 weights: np.ndarray) -> np.ndarray:
-        """Correct weights for outliers."""
-        if self.outliers is not None:
-            where_outliers = q_outliers(data - est, q_margin=self.outliers)
-            weights = weights * (1 - where_outliers)
-        return weights

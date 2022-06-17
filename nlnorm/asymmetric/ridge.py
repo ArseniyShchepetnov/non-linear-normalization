@@ -5,13 +5,13 @@ import numpy as np
 from sklearn.linear_model import Ridge
 
 from nlnorm.diff_matrix import invertable_diff2_matrix
-from nlnorm.outliers import q_outliers
+from nlnorm.outliers import correct_weights_outliers
 
 
-class AsymmetricRidge:
+class AsymmetricRidge:  # pylint: disable=too-few-public-methods
     """Asymmetric ridge regression."""
 
-    def __init__(self,
+    def __init__(self,  # pylint: disable=too-many-arguments
                  alpha: float = 0.9,
                  alpha_ridge: float = 0.9,
                  tol: float = 1e-6,
@@ -60,29 +60,23 @@ class AsymmetricRidge:
         else:
             ridge_params = self.ridge_params
 
-        Dinv = np.linalg.inv(invertable_diff2_matrix(len(data)))
+        diff_inv = np.linalg.inv(invertable_diff2_matrix(len(data)))
 
         weights = np.ones(shape=(len(data), ))
         ridge = Ridge(alpha=self.alpha_ridge, **ridge_params)
 
         for _ in range(self.max_iter):
 
-            ridge.fit(Dinv, data, sample_weight=weights)
-            est = ridge.predict(Dinv)
+            ridge.fit(diff_inv, data, sample_weight=weights)
+            est = ridge.predict(diff_inv)
 
             weights = (
                 self.alpha * (data > est) + (1 - self.alpha) * (data < est)
             )
-            weights = self.correct_weights_outliers(data, est, weights)
+            if self.outliers is not None:
+                weights = correct_weights_outliers(data,
+                                                   est,
+                                                   weights,
+                                                   outliers=self.outliers)
 
         return est
-
-    def correct_weights_outliers(self,
-                                 data: np.ndarray,
-                                 est: np.ndarray,
-                                 weights: np.ndarray) -> np.ndarray:
-        """Correct weights for outliers."""
-        if self.outliers is not None:
-            where_outliers = q_outliers(data - est, q_margin=self.outliers)
-            weights = weights * (1 - where_outliers)
-        return weights

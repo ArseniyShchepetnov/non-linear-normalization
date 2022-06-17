@@ -7,7 +7,7 @@ from sklearn.linear_model import LinearRegression
 from nlnorm.outliers import q_outliers
 
 
-class AsymmetricLinearRegression:
+class AsymmetricLinearRegression:  # pylint: disable=too-few-public-methods
     """Asymmetric linear regression."""
 
     def __init__(self,
@@ -75,5 +75,5 @@ class AsymmetricLinearRegression:
             if self.outliers is not None:
                 where_outliers = q_outliers(diff, q_margin=self.outliers)
                 weights = weights * (1 - where_outliers)
-            print(weights)
+
         return pred
