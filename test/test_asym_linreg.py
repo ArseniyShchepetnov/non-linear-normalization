@@ -1,8 +1,8 @@
 """Test asymmetric linear regression."""
+from test.test_data_generate import generate_saw
+
 import numpy as np
 
-
-from test.test_data_generate import generate_saw
 from nlnorm.asymmetric.linear_regression import AsymmetricLinearRegression
 
 
