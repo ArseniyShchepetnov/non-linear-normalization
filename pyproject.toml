@@ -5,15 +5,17 @@ description = ""
 authors = ["Arseniy Shchepetnov <a.shchepetnov@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 numpy = "^1.22.4"
 scikit-learn = "^1.1.1"
-pytest = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
-pylint = "^2.14.2"
-mypy = "^0.961"
+ipykernel = "^6.9.2"
+mypy = "^0.942"
+pylint = "^2.14.0"
 autopep8 = "^1.6.0"
+types-PyYAML = "^6.0.5"
+pytest = "^7.1.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
