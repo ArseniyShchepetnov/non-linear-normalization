@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 import numpy as np
 from sklearn.linear_model import Ridge
 
-from nlnorm.diff_matrix import inverse_diff_1d, invertable_diff1_matrix, invertable_diff2_matrix
+from nlnorm.diff_matrix import invertable_diff2_matrix
 from nlnorm.outliers import q_outliers
 
 

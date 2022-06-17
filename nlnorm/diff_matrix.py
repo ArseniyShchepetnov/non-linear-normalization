@@ -4,10 +4,8 @@ import numpy as np
 
 def invertable_diff2_matrix(length: int) -> np.ndarray:
     """Construct invertable difference matrix of second order difference."""
-
     D = invertable_diff1_matrix(length)
     D = np.matmul(D, D)
-
     return D
 
 
